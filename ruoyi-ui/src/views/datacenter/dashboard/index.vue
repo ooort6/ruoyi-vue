@@ -26,7 +26,10 @@
             <span>用户增长趋势</span>
           </div>
           <div class="chart-wrapper">
-            <line-chart ref="userGrowthChart" />
+            <line-chart
+              ref="userGrowthChart"
+              :chart-data="{ expectedData: [], actualData: [] }"
+            />
           </div>
         </el-card>
       </el-col>
@@ -108,8 +111,11 @@ export default {
     this.getActivitiesData();
   },
   mounted() {
-    this.initUserGrowthChart();
-    this.initVisitSourceChart();
+    // 在nextTick中调用以确保DOM已完全渲染
+    this.$nextTick(() => {
+      this.initUserGrowthChart();
+      this.initVisitSourceChart();
+    });
   },
   methods: {
     // 获取核心数据概览
@@ -130,43 +136,60 @@ export default {
     },
     // 初始化用户增长图表
     initUserGrowthChart() {
-      getUserGrowthData().then((response) => {
-        const { data } = response;
-        this.$refs.userGrowthChart.setOptions({
-          title: {
-            text: "用户增长趋势",
-          },
-          xAxis: {
-            data: data.months,
-          },
-          series: [
-            {
-              name: "用户数",
-              data: data.values,
-            },
-          ],
+      getUserGrowthData()
+        .then((response) => {
+          const { data } = response;
+          // 更新chartData对象，适配LineChart组件的期望格式
+          const chartData = {
+            expectedData: data.values || [],
+            actualData: [], // 如果需要实际数据可以从后端传入
+          };
+
+          // 确保组件已挂载且refs可用
+          this.$nextTick(() => {
+            if (this.$refs.userGrowthChart) {
+              this.$refs.userGrowthChart.setOptions(chartData);
+            }
+          });
+        })
+        .catch((error) => {
+          console.error("获取用户增长数据失败:", error);
         });
-      });
     },
     // 初始化访问来源图表
     initVisitSourceChart() {
-      getVisitSourceData().then((response) => {
-        const { data } = response;
-        this.$refs.visitSourceChart.setOptions({
-          title: {
-            text: "访问来源分布",
-          },
-          series: [
-            {
-              name: "访问来源",
-              data: data.map((item) => ({
-                name: item.name,
-                value: item.value,
-              })),
-            },
-          ],
+      getVisitSourceData()
+        .then((response) => {
+          const { data } = response;
+
+          // 确保组件已挂载且refs可用
+          this.$nextTick(() => {
+            if (this.$refs.visitSourceChart) {
+              this.$refs.visitSourceChart.setOptions({
+                title: {
+                  text: "访问来源分布",
+                },
+                series: [
+                  {
+                    name: "访问来源",
+                    type: "pie",
+                    radius: [15, 95],
+                    center: ["50%", "38%"],
+                    data: Array.isArray(data)
+                      ? data.map((item) => ({
+                          name: item.name,
+                          value: item.value,
+                        }))
+                      : [],
+                  },
+                ],
+              });
+            }
+          });
+        })
+        .catch((error) => {
+          console.error("获取访问来源数据失败:", error);
         });
-      });
     },
   },
 };

@@ -91,15 +91,13 @@ export const constantRoutes = [
   {
     path: '/datacenter',
     component: Layout,
-    redirect: '/datacenter/dashboard',
-    name: 'DataCenter',
-    meta: { title: '数据中心', icon: 'datacenter' },
+    hidden: false,
     children: [
       {
-        path: 'dashboard',
-        component: () => import('@/views/datacenter/dashboard/index'),
-        name: 'CoreDataDashboard',
-        meta: { title: '核心数据看板', icon: 'dashboard-data' }
+        path: 'nondashboard',
+        component: () => import('@/views/datacenter/nondashboard/index'),
+        name: 'NonDashboard',
+        meta: { title: '非核心数据看板', icon: 'chart' }
       }
     ]
   }
