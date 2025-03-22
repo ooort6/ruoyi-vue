@@ -161,6 +161,21 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
+  },
+  {
+    path: '/datacenter',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'DataCenter',
+    meta: { title: '数据中心', icon: 'datacenter' },
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/datacenter/dashboard/index'),
+        name: 'CoreDataDashboard',
+        meta: { title: '核心数据看板', icon: 'dashboard-data' }
+      }
+    ]
   }
 ]
 
