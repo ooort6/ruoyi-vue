@@ -1,147 +1,65 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <el-col :span="6">
-        <el-card class="box-card">
+      <el-col :span="6" v-for="(item, index) in coreData" :key="index">
+        <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
-            <span>总用户数</span>
+            <span>{{ item.title }}</span>
           </div>
-          <div class="data-item">
+          <div class="item-value">
             <count-to
               :start-val="0"
-              :end-val="totalUserCount"
+              :end-val="item.value"
               :duration="2000"
-              class="data-count"
-            ></count-to>
-            <div class="data-icon">
-              <svg-icon
-                icon-class="user"
-                style="font-size: 40px; color: #409eff"
-              ></svg-icon>
-            </div>
+              separator=","
+            />
           </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>今日访问量</span>
-          </div>
-          <div class="data-item">
-            <count-to
-              :start-val="0"
-              :end-val="todayVisits"
-              :duration="2000"
-              class="data-count"
-            ></count-to>
-            <div class="data-icon">
-              <svg-icon
-                icon-class="peoples"
-                style="font-size: 40px; color: #f56c6c"
-              ></svg-icon>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>系统消息</span>
-          </div>
-          <div class="data-item">
-            <count-to
-              :start-val="0"
-              :end-val="messageCount"
-              :duration="2000"
-              class="data-count"
-            ></count-to>
-            <div class="data-icon">
-              <svg-icon
-                icon-class="message"
-                style="font-size: 40px; color: #67c23a"
-              ></svg-icon>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>总任务数</span>
-          </div>
-          <div class="data-item">
-            <count-to
-              :start-val="0"
-              :end-val="taskCount"
-              :duration="2000"
-              class="data-count"
-            ></count-to>
-            <div class="data-icon">
-              <svg-icon
-                icon-class="job"
-                style="font-size: 40px; color: #e6a23c"
-              ></svg-icon>
-            </div>
-          </div>
+          <div class="item-desc">{{ item.desc }}</div>
         </el-card>
       </el-col>
     </el-row>
 
     <el-row :gutter="20" style="margin-top: 20px">
       <el-col :span="12">
-        <el-card class="box-card">
+        <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
             <span>用户增长趋势</span>
           </div>
-          <div class="chart-container">
-            <line-chart
-              id="userGrowthChart"
-              height="350px"
-              ref="userGrowthChart"
-            ></line-chart>
+          <div class="chart-wrapper">
+            <line-chart ref="userGrowthChart" />
           </div>
         </el-card>
       </el-col>
       <el-col :span="12">
-        <el-card class="box-card">
+        <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
             <span>访问来源分布</span>
           </div>
-          <div class="chart-container">
-            <pie-chart
-              id="visitSourceChart"
-              height="350px"
-              ref="visitSourceChart"
-            ></pie-chart>
+          <div class="chart-wrapper">
+            <pie-chart ref="visitSourceChart" />
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <el-row :gutter="20" style="margin-top: 20px">
+    <el-row style="margin-top: 20px">
       <el-col :span="24">
-        <el-card class="box-card">
+        <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
-            <span>最近系统活动</span>
+            <span>最近活动</span>
           </div>
-          <el-table :data="recentActivities" stripe style="width: 100%">
-            <el-table-column
-              prop="time"
-              label="时间"
-              width="180"
-            ></el-table-column>
-            <el-table-column
-              prop="user"
-              label="用户"
-              width="120"
-            ></el-table-column>
-            <el-table-column prop="activity" label="活动内容"></el-table-column>
-            <el-table-column
-              prop="ip"
-              label="IP地址"
-              width="150"
-            ></el-table-column>
-            <el-table-column prop="status" label="状态" width="100">
+          <el-table :data="activities" style="width: 100%">
+            <el-table-column prop="timestamp" label="时间" width="180">
+              <template slot-scope="scope">
+                <i class="el-icon-time"></i>
+                <span style="margin-left: 10px">{{ scope.row.timestamp }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="username" label="用户" width="180">
+            </el-table-column>
+            <el-table-column prop="operation" label="操作"> </el-table-column>
+            <el-table-column prop="ip" label="IP地址"> </el-table-column>
+            <el-table-column prop="status" label="状态">
               <template slot-scope="scope">
                 <el-tag
                   :type="scope.row.status === '成功' ? 'success' : 'danger'"
@@ -168,7 +86,7 @@ import {
 } from "@/api/datacenter/dashboard";
 
 export default {
-  name: "CoreDataDashboard",
+  name: "DataCenterDashboard",
   components: {
     CountTo,
     LineChart,
@@ -176,11 +94,13 @@ export default {
   },
   data() {
     return {
-      totalUserCount: 0,
-      todayVisits: 0,
-      messageCount: 0,
-      taskCount: 0,
-      recentActivities: [],
+      coreData: [
+        { title: "总用户数", value: 0, desc: "系统累计用户数量" },
+        { title: "今日访问", value: 0, desc: "今日访问系统次数" },
+        { title: "消息数量", value: 0, desc: "未处理消息数量" },
+        { title: "任务数量", value: 0, desc: "待处理任务数量" },
+      ],
+      activities: [],
     };
   },
   created() {
@@ -188,37 +108,33 @@ export default {
     this.getActivitiesData();
   },
   mounted() {
-    this.initCharts();
+    this.initUserGrowthChart();
+    this.initVisitSourceChart();
   },
   methods: {
-    // 获取数据概览
+    // 获取核心数据概览
     getOverviewData() {
       getCoreDataOverview().then((response) => {
-        const data = response.data;
-        this.totalUserCount = data.totalUserCount;
-        this.todayVisits = data.todayVisits;
-        this.messageCount = data.messageCount;
-        this.taskCount = data.taskCount;
+        const { data } = response;
+        this.coreData[0].value = data.totalUsers;
+        this.coreData[1].value = data.todayVisits;
+        this.coreData[2].value = data.messageCount;
+        this.coreData[3].value = data.taskCount;
       });
     },
-    // 获取系统活动数据
+    // 获取最近活动数据
     getActivitiesData() {
       getRecentActivities().then((response) => {
-        this.recentActivities = response.data;
+        this.activities = response.data;
       });
     },
-    // 初始化图表
-    initCharts() {
-      this.initUserGrowthChart();
-      this.initVisitSourceChart();
-    },
-    // 初始化用户增长趋势图
+    // 初始化用户增长图表
     initUserGrowthChart() {
       getUserGrowthData().then((response) => {
-        const data = response.data;
+        const { data } = response;
         this.$refs.userGrowthChart.setOptions({
           title: {
-            text: "近30天用户增长趋势",
+            text: "用户增长趋势",
           },
           xAxis: {
             data: data.months,
@@ -226,15 +142,16 @@ export default {
           series: [
             {
               name: "用户数",
-              data: data.counts,
+              data: data.values,
             },
           ],
         });
       });
     },
-    // 初始化访问来源分布图
+    // 初始化访问来源图表
     initVisitSourceChart() {
       getVisitSourceData().then((response) => {
+        const { data } = response;
         this.$refs.visitSourceChart.setOptions({
           title: {
             text: "访问来源分布",
@@ -242,7 +159,10 @@ export default {
           series: [
             {
               name: "访问来源",
-              data: response.data,
+              data: data.map((item) => ({
+                name: item.name,
+                value: item.value,
+              })),
             },
           ],
         });
@@ -252,21 +172,24 @@ export default {
 };
 </script>
 
-<style scoped>
-.data-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-}
-.data-count {
-  font-size: 28px;
-  font-weight: bold;
-  color: #303133;
-}
-.chart-container {
-  position: relative;
-  width: 100%;
-  height: 350px;
+<style lang="scss" scoped>
+.app-container {
+  .box-card {
+    margin-bottom: 10px;
+  }
+  .item-value {
+    font-size: 30px;
+    font-weight: bold;
+    color: #333;
+    margin: 15px 0;
+  }
+  .item-desc {
+    font-size: 14px;
+    color: #999;
+  }
+  .chart-wrapper {
+    width: 100%;
+    height: 300px;
+  }
 }
 </style>

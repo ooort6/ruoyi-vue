@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 获取核心数据总览
+// 获取核心数据概览
 export function getCoreDataOverview() {
   return request({
     url: '/datacenter/dashboard/overview',
@@ -24,7 +24,7 @@ export function getVisitSourceData() {
   })
 }
 
-// 获取最近系统活动
+// 获取最近活动记录
 export function getRecentActivities() {
   return request({
     url: '/datacenter/dashboard/recentActivities',

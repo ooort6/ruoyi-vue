@@ -87,6 +87,21 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/datacenter',
+    component: Layout,
+    redirect: '/datacenter/dashboard',
+    name: 'DataCenter',
+    meta: { title: '数据中心', icon: 'datacenter' },
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/datacenter/dashboard/index'),
+        name: 'CoreDataDashboard',
+        meta: { title: '核心数据看板', icon: 'dashboard-data' }
+      }
+    ]
   }
 ]
 
@@ -159,21 +174,6 @@ export const dynamicRoutes = [
         component: () => import('@/views/tool/gen/editTable'),
         name: 'GenEdit',
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
-      }
-    ]
-  },
-  {
-    path: '/datacenter',
-    component: Layout,
-    redirect: 'noRedirect',
-    name: 'DataCenter',
-    meta: { title: '数据中心', icon: 'datacenter' },
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import('@/views/datacenter/dashboard/index'),
-        name: 'CoreDataDashboard',
-        meta: { title: '核心数据看板', icon: 'dashboard-data' }
       }
     ]
   }
